@@ -117,24 +117,7 @@ void Equipo::jugador(int nro_jugador) {
 				//
 				// ...
 				//
-				mt.lock();
-				if(nro_jugador==this->jugador_max_distancia && this->belcebu->se_puede_mover(pos_actual, dir)) {
-					this->belcebu->mover_jugador(dir, nro_jugador);
-					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
-					this->jugador_max_distancia = this->jugador_maxima_distancia();
-				}
-				this->cant_jugadores_ya_jugaron++;
-				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores || this->belcebu->termino_juego()) {
-					this->cant_jugadores_ya_jugaron = 0;
-					for(int i=0; i<this->cant_jugadores; i++) {
-						sem_post(&this->barrier);
-					}
-					this->belcebu->termino_ronda(this->equipo);
-				}
-				mt.unlock();
-				sem_wait(&this->barrier);
-				sem_post(&this->belcebu->barrier);
-				break;
+				
 			default:
 				break;
 		}	
@@ -162,20 +145,11 @@ void Equipo::comenzar() {
     if(this->strat==RR){
         sem_post(&this->vec_sem[0]);
     }
-	else if(this->strat==SHORTEST){
+	else if(this->strat==SHORTEST || this->strat == USTEDES){
 		this->jugador_min_distancia = this->jugador_minima_distancia();
 		sem_post(&this->vec_sem[this->jugador_min_distancia]);
 	}
-	else if(this->strat==USTEDES){
-		this->jugador_max_distancia = this->jugador_maxima_distancia();
-		sem_post(&this->vec_sem[this->jugador_max_distancia]);
-	}
-	if(this->strat==USTEDES){
-		this->jugador_max_distancia = this->jugador_maxima_distancia();
-		sem_post(&this->vec_sem[this->jugador_max_distancia]);
-	}
-
-	// Creamos los jugadores
+		// Creamos los jugadores
 	for(int i=0; i < cant_jugadores; i++) {
 		jugadores.emplace_back(thread(&Equipo::jugador, this, i)); 
 	}
@@ -232,6 +206,16 @@ int Equipo::jugador_maxima_distancia() {
         }
     }
     return nro_jug;
+}
+
+int Equipo::fibbonacci_number_dp(int n) {
+	int fib[n+1];
+	fib[0] = 1;
+	fib[1] = 2;
+	for (int i = 2; i <= n; i++) {
+		fib[i] = fib[i-1] + fib[i-2];
+	}
+	return fib[n];
 }
 
 void Equipo::buscar_bandera_contraria(int nro_jugador) {

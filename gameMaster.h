@@ -21,7 +21,7 @@ private:
     vector<coordenadas> pos_jugadores_azules, pos_jugadores_rojos;
     color turno;
     estrategia strat;
-	
+	coordenadas pos_bandera_roja, pos_bandera_azul; 
     //
     //...
     //
@@ -39,9 +39,9 @@ public:
     void termino_ronda(color equipo); // Marca que un jugador terminó la ronda
     int mover_jugador(direccion dir, int nro_jugador);
     bool se_puede_mover(coordenadas pos_anterior, direccion dir);
+    int get_nro_ronda();
     color ganador = INDEFINIDO;
     sem_t barrier;
-    coordenadas pos_bandera_roja, pos_bandera_azul; //HACER PRIVDOS DE VUELTA Y ACCESIBLES POR FUNCION
     //
     //...
     //

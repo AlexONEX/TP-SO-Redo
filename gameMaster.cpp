@@ -130,7 +130,10 @@ void gameMaster::termino_ronda(color equipo) {
 	assert(this->turno == equipo || this->termino_juego());
     this->nro_ronda++;
     this->turno = (equipo == ROJO) ? AZUL : ROJO;
-	if(this->termino_juego()){
+	if(this->termino_juego() || this->nro_ronda > 100){
+        if(this->nro_ronda > 100){
+            this->ganador = EMPATE;
+        }
 		for(int i=0; i<10*this->jugadores_por_equipos; i++){
 			sem_post(&this->turno_rojo);
             sem_post(&this->turno_azul);
@@ -207,3 +210,7 @@ void gameMaster::dibujame(){
 color gameMaster::dame_equipo_actual() {
     return this->turno;
 } 
+
+int gameMaster::get_nro_ronda() {
+    return this->nro_ronda;
+}

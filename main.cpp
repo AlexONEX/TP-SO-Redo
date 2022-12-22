@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const estrategia strat = SECUENCIAL;
+const estrategia strat = SHORTEST;
 const int quantum = 10;
 
 int main(){
@@ -26,7 +26,6 @@ int main(){
 	rojo.terminar();
 	azul.terminar();	
     //belcebu.play();
-
-    cout << "Bandera capturada por el equipo "<< belcebu.ganador << ". Felicidades!" << endl;
+    belcebu.ganador != EMPATE ? cout << "Bandera capturada por el equipo "<< belcebu.ganador << ". Felicidades!" << endl : cout << "Empate!" << endl;
 
 }
