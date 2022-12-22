@@ -92,15 +92,13 @@ void Equipo::jugador(int nro_jugador) {
 				// ...
 				//
 				mt.lock();
-				//cout << "J IN " << nro_jugador << " " << this->equipo << endl;
-				assert(this->equipo == this->belcebu->equipo_jugando());
 				if(nro_jugador==this->jugador_min_distancia && this->belcebu->se_puede_mover(pos_actual, dir)) {
 					this->belcebu->mover_jugador(dir, nro_jugador);
 					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
-					//this->belcebu->dibujame();
+					this->jugador_min_distancia = this->jugador_minima_distancia();
 				}
 				this->cant_jugadores_ya_jugaron++;
-				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores) {
+				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores || this->belcebu->termino_juego()) {
 					this->cant_jugadores_ya_jugaron = 0;
 					for(int i=0; i<this->cant_jugadores; i++) {
 						sem_post(&this->barrier);
@@ -109,7 +107,6 @@ void Equipo::jugador(int nro_jugador) {
 				}
 				mt.unlock();
 				sem_wait(&this->barrier);
-				//cout << "J OUT " << nro_jugador << " " << this->equipo << endl;
 				sem_post(&this->belcebu->barrier);
 				break;
 
@@ -117,6 +114,25 @@ void Equipo::jugador(int nro_jugador) {
 				//
 				// ...
 				//
+				mt.lock();
+				if(nro_jugador==this->jugador_max_distancia && this->belcebu->se_puede_mover(pos_actual, dir)) {
+					this->belcebu->mover_jugador(dir, nro_jugador);
+					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
+					this->jugador_max_distancia = this->jugador_maxima_distancia();
+				}
+				this->cant_jugadores_ya_jugaron++;
+				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores || this->belcebu->termino_juego()) {
+					this->cant_jugadores_ya_jugaron = 0;
+					for(int i=0; i<this->cant_jugadores; i++) {
+						sem_post(&this->barrier);
+					}
+					this->belcebu->termino_ronda(this->equipo);
+				}
+				mt.unlock();
+				sem_wait(&this->barrier);
+				sem_post(&this->belcebu->barrier);
+				break;
+				break;
 				break;
 			default:
 				break;
@@ -146,9 +162,13 @@ void Equipo::comenzar() {
     if(this->strat==RR){
         sem_post(&this->vec_sem[0]);
     }
-	if(this->strat==SHORTEST){
+	else if(this->strat==SHORTEST){
 		this->jugador_min_distancia = this->jugador_minima_distancia();
 		sem_post(&this->vec_sem[this->jugador_min_distancia]);
+	}
+	else if(this->strat==USTEDES){
+		this->jugador_max_distancia = this->jugador_maxima_distancia();
+		sem_post(&this->vec_sem[this->jugador_max_distancia]);
 	}
 	if(this->strat==USTEDES){
 		this->jugador_max_distancia = this->jugador_maxima_distancia();
