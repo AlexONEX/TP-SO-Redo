@@ -40,15 +40,18 @@ class Equipo {
 		void comenzar();
 		void terminar();
 		int jugador_minima_distancia();
+		int jugador_minima_distancia2();
 		int jugador_maxima_distancia();	
 		int fibbonacci_number_dp(int n);
 		bool jugador_rodeado(int nro_jugador);
 
 		// crear jugadores
 		int jugador_min_distancia;
+		int jugador_min_distancia2;
 		int jugador_max_distancia;
 		vector<sem_t> vec_sem;
 		sem_t barrier;
+		sem_t barrier_ustedes;
 		mutex bandera_contraria_encontrada;
 };
 #endif // EQUIPO_H

@@ -2,10 +2,10 @@
 #include "equipo.h"
 #include "definiciones.h"
 #include "config.h"
-
+#include <assert.h>
 using namespace std;
 
-const estrategia strat = SHORTEST;
+const estrategia strat = USTEDES;
 const int quantum = 10;
 
 int main(){
@@ -16,7 +16,7 @@ int main(){
  
 
 	// Creo equipos (lanza procesos)
-	int quantum = 10;
+    strat == USTEDES ? assert(config.cantidad_jugadores>1): assert(config.cantidad_jugadores>0);
 	Equipo rojo(&belcebu, ROJO, strat, config.cantidad_jugadores, quantum, config.pos_rojo);
 	Equipo azul(&belcebu, AZUL, strat, config.cantidad_jugadores, quantum, config.pos_azul);
     
