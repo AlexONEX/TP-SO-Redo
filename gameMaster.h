@@ -19,7 +19,6 @@ private:
     int x, y, jugadores_por_equipos;
     vector<vector<color>> tablero;
     vector<coordenadas> pos_jugadores_azules, pos_jugadores_rojos;
-    coordenadas pos_bandera_roja, pos_bandera_azul;
     color turno;
     estrategia strat;
 	
@@ -42,6 +41,7 @@ public:
     bool se_puede_mover(coordenadas pos_anterior, direccion dir);
     color ganador = INDEFINIDO;
     sem_t barrier;
+    coordenadas pos_bandera_roja, pos_bandera_azul; //HACER PRIVDOS DE VUELTA Y ACCESIBLES POR FUNCION
     //
     //...
     //

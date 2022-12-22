@@ -17,7 +17,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	this->belcebu = belcebu;
 	this->equipo = equipo;
 	this->contrario = (equipo == ROJO)? AZUL: ROJO;
-	this->bandera_contraria = (equipo==ROJO)? BANDERA_AZUL: BANDERA_ROJA;
+	//this->bandera_contraria = (equipo==ROJO)? BANDERA_AZUL: BANDERA_ROJA;
 	this->strat = strat;
 	this->quantum = quantum;
 	this->quantum_restante = quantum;
@@ -45,6 +45,10 @@ void Equipo::jugador(int nro_jugador) {
 	//
 	// ...
 	//
+	buscar_bandera_contraria(nro_jugador);
+	this->bandera_contraria_encontrada.lock();
+	this->bandera_contraria_encontrada.unlock();
+
 
 	while(!this->belcebu->termino_juego()) { // Chequear que no haya una race condition en gameMaster
 		// Espero turno
@@ -153,7 +157,6 @@ void Equipo::comenzar() {
 	//
 	// ...
 	//
-
 	if (this->equipo == ROJO) {
         for (int i = 0; i < this->cant_jugadores; i++) {
             sem_post(&this->belcebu->turno_rojo);
@@ -185,12 +188,6 @@ void Equipo::terminar() {
 	for(auto &t:jugadores){
 		t.join();
 	}	
-}
-
-coordenadas Equipo::buscar_bandera_contraria() {
-	//
-	// ...
-	//
 }
 
 bool Equipo::jugador_rodeado(int nro_jugador) {
@@ -239,3 +236,48 @@ int Equipo::jugador_maxima_distancia() {
     }
     return nro_jug;
 }
+
+void Equipo::buscar_bandera_contraria(int nro_jugador) {
+	int tam_x = belcebu->getTamx(); 
+	int tam_y = belcebu->getTamy();
+	int recorrido_de_casilleros = (tam_x * tam_y) / cant_jugadores;
+	int comienzo = nro_jugador * recorrido_de_casilleros;
+	int fin = (nro_jugador + 1) * recorrido_de_casilleros; 
+	
+	for(int i = comienzo; i < fin; i++){
+		if(equipo == ROJO){
+			if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_AZUL){
+				pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+				bandera_contraria_encontrada.unlock();
+				return;
+			}
+		} else {
+			if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_ROJA){
+				pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+				bandera_contraria_encontrada.unlock();
+				return; 
+			}
+		}
+	}
+
+	// Division no entera, no se encontro el la bandera contraria
+	// y ultimo jugador recorre mas casilleros. 
+	if (nro_jugador == cant_jugadores -1 && pos_bandera_contraria == make_pair(-1,-1)){
+		for(int i = fin; i < tam_x * tam_y; i++){
+			if(equipo == ROJO){
+				if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_AZUL){
+					pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+					bandera_contraria_encontrada.unlock();
+					return;
+				}
+			} else {
+				if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_ROJA){
+					pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+					bandera_contraria_encontrada.unlock();
+					return; 
+				}
+			}
+		}	
+	}
+}
+

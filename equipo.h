@@ -30,7 +30,7 @@ class Equipo {
 		// Métodos privados 
 		direccion apuntar_a(coordenadas pos2, coordenadas pos1);
 		void jugador(int nro_jugador);
-		coordenadas buscar_bandera_contraria();
+		void buscar_bandera_contraria(int nro_jugador);
 		//
 		// ...
 		//
@@ -48,5 +48,6 @@ class Equipo {
 		int jugador_max_distancia;
 		vector<sem_t> vec_sem;
 		sem_t barrier;
+		mutex bandera_contraria_encontrada;
 };
 #endif // EQUIPO_H
