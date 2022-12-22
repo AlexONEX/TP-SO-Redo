@@ -126,6 +126,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
+    this->dibujame();
 	assert(this->turno == equipo || this->termino_juego());
     this->nro_ronda++;
     this->turno = (equipo == ROJO) ? AZUL : ROJO;
@@ -136,7 +137,6 @@ void gameMaster::termino_ronda(color equipo) {
 		}
 	}
 	else{
-        cout << "New round " << this->turno <<  endl;
         for(int i=0; i<this->jugadores_por_equipos; i++){
             sem_wait(&this->barrier);
         }

@@ -17,7 +17,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	this->belcebu = belcebu;
 	this->equipo = equipo;
 	this->contrario = (equipo == ROJO)? AZUL: ROJO;
-	//this->bandera_contraria = (equipo==ROJO)? BANDERA_AZUL: BANDERA_ROJA;
+	this->bandera_contraria = (equipo==ROJO)? BANDERA_AZUL: BANDERA_ROJA;
 	this->strat = strat;
 	this->quantum = quantum;
 	this->quantum_restante = quantum;
@@ -29,7 +29,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	this->cant_jugadores_ya_jugaron = 0;
 	assert(this->posiciones.size() == this->cant_jugadores);
 	
-	this->pos_bandera_contraria = this->belcebu->pos_bandera(this->contrario);
+	//this->pos_bandera_contraria = this->belcebu->pos_bandera(this->contrario);
 	this->jugador_min_distancia  = this->jugador_minima_distancia();
 	this->jugador_max_distancia  = this->jugador_maxima_distancia();
 
@@ -48,7 +48,6 @@ void Equipo::jugador(int nro_jugador) {
 	buscar_bandera_contraria(nro_jugador);
 	this->bandera_contraria_encontrada.lock();
 	this->bandera_contraria_encontrada.unlock();
-
 
 	while(!this->belcebu->termino_juego()) { // Chequear que no haya una race condition en gameMaster
 		// Espero turno
@@ -135,8 +134,6 @@ void Equipo::jugador(int nro_jugador) {
 				mt.unlock();
 				sem_wait(&this->barrier);
 				sem_post(&this->belcebu->barrier);
-				break;
-				break;
 				break;
 			default:
 				break;
@@ -241,19 +238,21 @@ void Equipo::buscar_bandera_contraria(int nro_jugador) {
 	int tam_x = belcebu->getTamx(); 
 	int tam_y = belcebu->getTamy();
 	int recorrido_de_casilleros = (tam_x * tam_y) / cant_jugadores;
-	int comienzo = nro_jugador * recorrido_de_casilleros;
-	int fin = (nro_jugador + 1) * recorrido_de_casilleros; 
+	int start = nro_jugador * recorrido_de_casilleros;
+	int end = (nro_jugador + 1) * recorrido_de_casilleros; 
 	
-	for(int i = comienzo; i < fin; i++){
+	for(int i = start; i < end; i++){
 		if(equipo == ROJO){
 			if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_AZUL){
-				pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+				this->pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+				assert(this->belcebu->pos_bandera(this->contrario) == this->pos_bandera_contraria);
 				bandera_contraria_encontrada.unlock();
 				return;
 			}
 		} else {
 			if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_ROJA){
-				pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+				this->pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
+				assert(this->belcebu->pos_bandera(this->contrario) == this->pos_bandera_contraria);
 				bandera_contraria_encontrada.unlock();
 				return; 
 			}
@@ -263,7 +262,7 @@ void Equipo::buscar_bandera_contraria(int nro_jugador) {
 	// Division no entera, no se encontro el la bandera contraria
 	// y ultimo jugador recorre mas casilleros. 
 	if (nro_jugador == cant_jugadores -1 && pos_bandera_contraria == make_pair(-1,-1)){
-		for(int i = fin; i < tam_x * tam_y; i++){
+		for(int i = end; i < tam_x * tam_y; i++){
 			if(equipo == ROJO){
 				if (this->belcebu->en_posicion(make_pair(i/tam_y, i%tam_y)) == BANDERA_AZUL){
 					pos_bandera_contraria = make_pair(i/tam_y, i%tam_y);
