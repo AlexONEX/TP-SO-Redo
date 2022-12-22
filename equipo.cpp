@@ -112,6 +112,29 @@ void Equipo::jugador(int nro_jugador) {
 				sem_wait(&this->barrier);
 				sem_post(&this->belcebu->barrier);
 				break;
+			
+			case(LONGEST):
+				//
+				// ...
+				//
+				mt.lock();
+				if(nro_jugador==this->jugador_max_distancia && this->belcebu->se_puede_mover(pos_actual, dir)) {
+					this->belcebu->mover_jugador(dir, nro_jugador);
+					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
+					this->jugador_max_distancia = this->jugador_maxima_distancia();
+				}
+				this->cant_jugadores_ya_jugaron++;
+				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores || this->belcebu->termino_juego()) {
+					this->cant_jugadores_ya_jugaron = 0;
+					for(int i=0; i<this->cant_jugadores; i++) {
+						sem_post(&this->barrier);
+					}
+					this->belcebu->termino_ronda(this->equipo);
+				}
+				mt.unlock();
+				sem_wait(&this->barrier);
+				sem_post(&this->belcebu->barrier);
+				break;
 
 			case(USTEDES):
 				//
@@ -163,13 +186,17 @@ void Equipo::comenzar() {
     if(this->strat==RR){
         sem_post(&this->vec_sem[0]);
     }
-	else if(this->strat==SHORTEST || this->strat == USTEDES){
+	else if(this->strat==SHORTEST ){
+		this->jugador_min_distancia = this->jugador_minima_distancia();
+	}
+	else if(this->strat==LONGEST){
+		this->jugador_max_distancia = this->jugador_maxima_distancia();
+	}
+	else if(this->strat==USTEDES){
 		this->jugador_min_distancia = this->jugador_minima_distancia();
 		this->jugador_min_distancia2 = this->jugador_minima_distancia2();
-		sem_post(&this->vec_sem[this->jugador_min_distancia]);
-		sem_post(&this->vec_sem[this->jugador_min_distancia2]);
-	}
 		// Creamos los jugadores
+	}
 	for(int i=0; i < cant_jugadores; i++) {
 		jugadores.emplace_back(thread(&Equipo::jugador, this, i)); 
 	}
@@ -235,7 +262,7 @@ int Equipo::jugador_minima_distancia2() {
 
 int Equipo::jugador_maxima_distancia() {
     int max_dist = -1;
-    int nro_jug = 0;
+    int nro_jug = -1;
     for (int i = 0; i < this->cant_jugadores; i++) {
         coordenadas p = this->posiciones[i];
         int dist = this->belcebu->distancia(p, this->pos_bandera_contraria);
@@ -244,6 +271,7 @@ int Equipo::jugador_maxima_distancia() {
             nro_jug = i;
         }
     }
+	assert(nro_jug != -1);
     return nro_jug;
 }
 

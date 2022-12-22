@@ -47,6 +47,7 @@ gameMaster::gameMaster(Config config) {
 	this->pos_bandera_azul = config.bandera_azul;
     this->pos_jugadores_rojos = config.pos_rojo;
     this->pos_jugadores_azules = config.pos_azul;
+
 	// Seteo tablero
 	tablero.resize(x);
     for (int i = 0; i < x; ++i) {
@@ -127,7 +128,8 @@ void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
     this->dibujame();
-	assert(this->turno == equipo || this->termino_juego());
+    cout << "TERMINO RONDA" << endl;
+	//assert(this->turno == equipo || this->termino_juego());
     this->nro_ronda++;
     this->turno = (equipo == ROJO) ? AZUL : ROJO;
 	if(this->termino_juego() || this->nro_ronda > 100){
