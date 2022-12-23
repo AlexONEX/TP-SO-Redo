@@ -49,6 +49,7 @@ class Equipo {
 		int jugador_min_distancia;
 		int jugador_min_distancia2;
 		int jugador_max_distancia;
+		bool vuelta_rr;
 		vector<sem_t> vec_sem;
 		sem_t barrier;
 		sem_t barrier_ustedes;

@@ -2,7 +2,8 @@
   "files.associations": {
     "ostream": "cpp",
     "mutex": "cpp",
-    "chrono": "cpp"
+    "chrono": "cpp",
+    "iostream": "cpp"
   },
   "markdown-todo.sortByCount": false
 }

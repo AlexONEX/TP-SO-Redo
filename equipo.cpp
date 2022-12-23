@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <limits>
 
+#define endl '\n'
+
 mutex mt;
 
 direccion Equipo::apuntar_a(coordenadas pos1, coordenadas pos2) {
@@ -27,6 +29,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	// ...
 	//
 	this->cant_jugadores_ya_jugaron = 0;
+	this->vuelta_rr = true;
 	assert(this->posiciones.size() == this->cant_jugadores);
 	
 	//this->pos_bandera_contraria = this->belcebu->pos_bandera(this->contrario);
@@ -60,6 +63,11 @@ void Equipo::jugador(int nro_jugador) {
 		if(this->belcebu->termino_juego()) {
 			return;
 		}
+		mt.lock();
+		if(this->strat == RR && !this->vuelta_rr){
+			vuelta_rr = true;
+		}
+		mt.unlock();
 		assert(this->equipo == this->belcebu->equipo_jugando());
 		//cout << "J IN " << nro_jugador << " " << this->equipo << endl;
         coordenadas pos_actual = this->posiciones[nro_jugador];
@@ -85,9 +93,41 @@ void Equipo::jugador(int nro_jugador) {
 				sem_post(&this->belcebu->barrier);
 				break;
 			case(RR):
-				//
-				// ...
-				//
+				while(1){
+					//Casos. Tengo Quantum.
+					// Si tengo quantum. Muevo y resto al quantum y vuelvo a la barrera.
+					//Quantum es 0.
+					// Si quantum es 0 0 termino el juego. Reseteo quantum. libero la barrera. 
+					sem_wait(&this->vec_sem[nro_jugador]);
+					mt.lock();
+					cout << "IN J " << nro_jugador << " " << this->equipo << " " << this->quantum_restante << endl;
+					this->quantum_restante--;
+					if(this->belcebu->termino_juego()) {
+						mt.unlock();
+						return;
+					}
+					if(!this->vuelta_rr){
+						mt.unlock();
+						break;
+					}
+					if(this->belcebu->se_puede_mover(pos_actual, dir) && this->quantum_restante>0) {
+						this->belcebu->mover_jugador(dir, nro_jugador);
+						this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
+						int next = (nro_jugador+1)%this->cant_jugadores;
+						sem_post(&this->vec_sem[next]);
+					}
+					if(this->quantum_restante<=0){
+						this->quantum_restante = this->quantum;
+						this->vuelta_rr = false;
+						for(int i=0; i<this->cant_jugadores; i++) {
+							sem_post(&this->vec_sem[i]);
+						}
+						this->belcebu->termino_ronda(this->equipo);
+					}
+					mt.unlock();
+				cout << "OUT J " << nro_jugador << " " << this->equipo << " " << this->quantum_restante << endl;
+				}
+				sem_post(&this->belcebu->barrier);
 				break;
 
 			case(SHORTEST):
