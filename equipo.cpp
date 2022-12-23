@@ -112,9 +112,13 @@ void Equipo::jugador(int nro_jugador) {
 					}
 					mt.lock();
 					cout << "IN J " << nro_jugador << " " << this->equipo << endl;
-					if(this->belcebu->termino_juego()){
-						mt.unlock();
+					//Faltan casos. Si termino el juego y es el primero. Sino
+					if(this->belcebu->termino_juego() && !this->vuelta_rr){
+						for(int i=0; i<2*this->cant_jugadores; i++) {
+							sem_post(&this->vec_sem[i]);
+						}
 						cout << "OUT FG " << nro_jugador << " " << this->equipo << endl;
+						mt.unlock();
 						return;
 					}
 					else if(this->quantum_restante>0 && vuelta_rr){
