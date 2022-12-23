@@ -38,7 +38,7 @@ public:
     gameMaster(Config config);
     void termino_ronda(color equipo); // Marca que un jugador terminó la ronda
     int mover_jugador(direccion dir, int nro_jugador);
-    bool se_puede_mover(coordenadas pos_anterior, direccion dir);
+    bool mov_habilitado(coordenadas pos_anterior, direccion dir);
     int get_nro_ronda();
     color ganador = INDEFINIDO;
     sem_t barrier;

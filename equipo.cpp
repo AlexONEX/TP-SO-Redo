@@ -55,19 +55,22 @@ void Equipo::jugador(int nro_jugador) {
 	while(!this->belcebu->termino_juego()) { // Chequear que no haya una race condition en gameMaster
 		// Espero turno
 		// Si soy rojo espero mi semaforo. Idem si azul.
-		if(this->equipo == ROJO) {
+		if(this->equipo == ROJO){
 			sem_wait(&this->belcebu->turno_rojo);
-		} else {
+		}else{
 			sem_wait(&this->belcebu->turno_azul);
 		}
 		if(this->belcebu->termino_juego()) {
 			return;
 		}
-		mt.lock();
-		if(this->strat == RR && !this->vuelta_rr){
-			vuelta_rr = true;
+		if(this->strat == RR){
+			mt.lock();
+			if(!this->vuelta_rr){
+				this->vuelta_rr = true;
+				mt.unlock();
+			}
+			mt.unlock();
 		}
-		mt.unlock();
 		assert(this->equipo == this->belcebu->equipo_jugando());
 		//cout << "J IN " << nro_jugador << " " << this->equipo << endl;
         coordenadas pos_actual = this->posiciones[nro_jugador];
@@ -76,7 +79,7 @@ void Equipo::jugador(int nro_jugador) {
 			//SECUENCIAL,RR,SHORTEST,USTEDES
 			case(SECUENCIAL):
 				mt.lock();
-				if(this->belcebu->se_puede_mover(pos_actual, dir) && this->belcebu->termino_juego() == false) {
+				if(this->belcebu->mov_habilitado(pos_actual, dir) && this->belcebu->termino_juego() == false) {
 					this->belcebu->mover_jugador(dir, nro_jugador);
 					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 				}
@@ -94,40 +97,55 @@ void Equipo::jugador(int nro_jugador) {
 				break;
 			case(RR):
 				while(1){
-					//Casos. Tengo Quantum.
-					// Si tengo quantum. Muevo y resto al quantum y vuelvo a la barrera.
-					//Quantum es 0.
-					// Si quantum es 0 0 termino el juego. Reseteo quantum. libero la barrera. 
+					cout << "J W " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
 					mt.lock();
-					cout << "IN J " << nro_jugador << " " << this->equipo << " " << this->quantum_restante << endl;
-					this->quantum_restante--;
-					if(this->belcebu->termino_juego()) {
+					cout << "J IN " << nro_jugador << " " << this->equipo << endl;
+					if(this->belcebu->termino_juego()){
+						for(int i=0; i<this->cant_jugadores; i++) {
+							sem_post(&this->vec_sem[i]);
+						}
 						mt.unlock();
 						return;
 					}
 					if(!this->vuelta_rr){
+						sem_post(&this->belcebu->barrier);
+						cout << "J BB " << nro_jugador << " " << this->equipo << endl;
 						mt.unlock();
 						break;
 					}
-					if(this->belcebu->se_puede_mover(pos_actual, dir) && this->quantum_restante>0) {
-						this->belcebu->mover_jugador(dir, nro_jugador);
-						this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
-						int next = (nro_jugador+1)%this->cant_jugadores;
-						sem_post(&this->vec_sem[next]);
-					}
-					if(this->quantum_restante<=0){
-						this->quantum_restante = this->quantum;
-						this->vuelta_rr = false;
-						for(int i=0; i<this->cant_jugadores; i++) {
-							sem_post(&this->vec_sem[i]);
+					if(this->quantum_restante > 0 && this->vuelta_rr){
+						cout << "J IN1 " << nro_jugador << " " << this->equipo << endl;
+						if(this->belcebu->mov_habilitado(pos_actual, dir)) {
+							this->belcebu->mover_jugador(dir, nro_jugador);
+							this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 						}
-						this->belcebu->termino_ronda(this->equipo);
+						this->quantum_restante--;
+						if(this->belcebu->termino_juego()){
+							cout << "J INFG " << nro_jugador << " " << this->equipo << endl;
+							for(int i=0; i<this->cant_jugadores; i++) {
+								sem_post(&this->vec_sem[i]);
+							}
+							mt.unlock();
+							return;
+						}
+						if(this->quantum_restante == 0){
+							cout << "J INFR " << nro_jugador << " " << this->equipo << endl;
+							this->vuelta_rr = false;
+							sem_post(&this->vec_sem[0]);
+							for(int i=0; i<this->cant_jugadores; i++) {
+								sem_post(&this->vec_sem[i]);
+							}
+							// ERROR ACA. ESTOY SALTNADO DEL WHILE. NO TENGO Q SALTAR DEL WHILE
+							mt.unlock();
+							this->belcebu->termino_ronda(this->equipo);
+							break;
+						}
+						cout << "J LN " << nro_jugador << " " << this->equipo << endl;
+						sem_post(&this->vec_sem[(nro_jugador+1)%this->cant_jugadores]);
+						mt.unlock();
 					}
-					mt.unlock();
-				cout << "OUT J " << nro_jugador << " " << this->equipo << " " << this->quantum_restante << endl;
 				}
-				sem_post(&this->belcebu->barrier);
 				break;
 
 			case(SHORTEST):
@@ -135,7 +153,7 @@ void Equipo::jugador(int nro_jugador) {
 				// ...
 				//
 				mt.lock();
-				if(nro_jugador==this->jugador_min_distancia && this->belcebu->se_puede_mover(pos_actual, dir)) {
+				if(nro_jugador==this->jugador_min_distancia && this->belcebu->mov_habilitado(pos_actual, dir)) {
 					this->belcebu->mover_jugador(dir, nro_jugador);
 					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 					this->jugador_min_distancia = this->jugador_minima_distancia();
@@ -158,7 +176,7 @@ void Equipo::jugador(int nro_jugador) {
 				// ...
 				//
 				mt.lock();
-				if(nro_jugador==this->jugador_max_distancia && this->belcebu->se_puede_mover(pos_actual, dir)) {
+				if(nro_jugador==this->jugador_max_distancia && this->belcebu->mov_habilitado(pos_actual, dir)) {
 					this->belcebu->mover_jugador(dir, nro_jugador);
 					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 					this->jugador_max_distancia = this->jugador_maxima_distancia();
@@ -181,7 +199,7 @@ void Equipo::jugador(int nro_jugador) {
 				// ...
 				//
 				mt.lock();
-				if( (nro_jugador==this->jugador_min_distancia || nro_jugador==this->jugador_min_distancia2) && this->belcebu->se_puede_mover(pos_actual, dir)) {
+				if( (nro_jugador==this->jugador_min_distancia || nro_jugador==this->jugador_min_distancia2) && this->belcebu->mov_habilitado(pos_actual, dir)) {
 					this->belcebu->mover_jugador(dir, nro_jugador);
 					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 					this->jugador_min_distancia = this->jugador_minima_distancia();

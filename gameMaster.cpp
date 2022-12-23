@@ -2,6 +2,8 @@
 #include <assert.h>
 #include "gameMaster.h"
 
+#define endl '\n'
+
 color gameMaster::en_posicion(coordenadas coord) {
 	return tablero[coord.first][coord.second];
 }
@@ -94,7 +96,7 @@ bool gameMaster::es_color_libre(color color_tablero){
 }
 
 
-bool gameMaster::se_puede_mover(coordenadas pos_actual, direccion dir){
+bool gameMaster::mov_habilitado(coordenadas pos_actual, direccion dir){
 	 coordenadas pos_nueva = proxima_posicion(pos_actual, dir);
 	 return es_posicion_valida(pos_nueva) && es_color_libre(tablero[pos_nueva.first][pos_nueva.second]);
 }
@@ -123,13 +125,11 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
     return 	(this->termino_juego() ? 0 : nro_ronda);
 }
 
-
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
-    this->dibujame();
+    //this->dibujame();
     cout << "TERMINO RONDA" << endl;
-	//assert(this->turno == equipo || this->termino_juego());
     this->nro_ronda++;
     this->turno = (equipo == ROJO) ? AZUL : ROJO;
 	if(this->termino_juego() || this->nro_ronda > 100){
@@ -142,10 +142,12 @@ void gameMaster::termino_ronda(color equipo) {
 		}
 	}
 	else{
-        this->dibujame();
+        //this->dibujame();
         for(int i=0; i<this->jugadores_por_equipos; i++){
             sem_wait(&this->barrier);
+            cout << i << endl;
         }
+        cout << "UNLOCKED BARRIER" << endl;
 		for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);
 		}
