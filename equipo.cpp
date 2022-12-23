@@ -60,6 +60,7 @@ void Equipo::jugador(int nro_jugador) {
 		}else if(this->equipo == AZUL){
 			sem_wait(&this->belcebu->turno_azul);
 		}
+		cout << "J PASS " << nro_jugador << " " << this->equipo << endl;
 		if(this->belcebu->termino_juego()) {
 			return;
 		}
@@ -97,11 +98,6 @@ void Equipo::jugador(int nro_jugador) {
 				break;
 			case(RR):
 				while(1){
-					//wait your semaphore
-					//if vuelta_rr == false and termino_juego == false then post to belcebu and leave
-					//else if vuelta_rr == false and termino_juego then return 
-					//else if quantum>0 and vuelta_rr then move and let next player play
-					//else if quantum==0 and vuelta_rr then reset quantum, vuelt_rr = false and free all players 
 					cout << "W J " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
 					if(!this->vuelta_rr && !this->belcebu->termino_juego() && !this->vuelta_rr){
@@ -112,9 +108,8 @@ void Equipo::jugador(int nro_jugador) {
 					}
 					mt.lock();
 					cout << "IN J " << nro_jugador << " " << this->equipo << endl;
-					//Faltan casos. Si termino el juego y es el primero. Sino
 					if(this->belcebu->termino_juego() && !this->vuelta_rr){
-						for(int i=0; i<2*this->cant_jugadores; i++) {
+						for(int i=0; i<3*this->cant_jugadores; i++) {
 							sem_post(&this->vec_sem[i]);
 						}
 						cout << "OUT FG " << nro_jugador << " " << this->equipo << endl;
@@ -129,7 +124,7 @@ void Equipo::jugador(int nro_jugador) {
 						}
 						mt.unlock();
 						sem_post(&this->vec_sem[(nro_jugador+1)%this->cant_jugadores]);
-						cout << "OUT RR " << nro_jugador << " " << this->equipo << endl;
+						cout << "OUT RR " << nro_jugador << " " << this->equipo << " " << this->quantum_restante <<endl;
 					}
 					else if(this->quantum_restante==0 && vuelta_rr){
 						cout << "OUT FRF " << nro_jugador << " " << this->equipo << endl;
