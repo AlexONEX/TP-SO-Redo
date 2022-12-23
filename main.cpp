@@ -22,7 +22,7 @@ int main(){
 	rojo.terminar();
 	azul.terminar();	
     //belcebu.play();
-    
+
     belcebu.ganador != EMPATE ? cout << "Bandera capturada por el equipo "<< belcebu.ganador << ". Felicidades!" << endl : cout << "Empate!" << endl;
 
 }
