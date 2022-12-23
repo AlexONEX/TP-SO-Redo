@@ -2,8 +2,8 @@ CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
-Testing
 Makefile
+Testing
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
@@ -12,3 +12,5 @@ _deps
 test_tp_sistemas
 .vscode/
 build/
+Makefile
+Makefile
