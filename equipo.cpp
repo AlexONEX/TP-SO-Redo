@@ -104,7 +104,7 @@ void Equipo::jugador(int nro_jugador) {
 					//else if quantum==0 and vuelta_rr then reset quantum, vuelt_rr = false and free all players 
 					cout << "W J " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
-					if(!this->vuelta_rr && !this->belcebu->termino_juego()){
+					if(!this->vuelta_rr && !this->belcebu->termino_juego() && !this->vuelta_rr){
 						mt.unlock();
 						sem_post(&this->belcebu->barrier);
 						cout << "OUT FR " << nro_jugador << " " << this->equipo << endl;
