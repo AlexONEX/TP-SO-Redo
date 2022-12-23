@@ -102,7 +102,6 @@ bool gameMaster::mov_habilitado(coordenadas pos_actual, direccion dir){
 }
 
 void gameMaster::mover_jugador_tablero(coordenadas pos_anterior, coordenadas pos_nueva, color colorEquipo){
-    assert(es_color_libre(tablero[pos_nueva.first][pos_nueva.second]));
     tablero[pos_anterior.first][pos_anterior.second] = VACIO; 
     tablero[pos_nueva.first][pos_nueva.second] = colorEquipo;
 }
@@ -115,6 +114,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 	this->turno == ROJO ? pos_actual = this->pos_jugadores_rojos[nro_jugador] : pos_actual = this->pos_jugadores_azules[nro_jugador];
     prox_pos = this->proxima_posicion(pos_actual, dir);
     assert(es_posicion_valida(prox_pos));
+    assert(es_color_libre(tablero[prox_pos.first][prox_pos.second]));
     mover_jugador_tablero(pos_actual, prox_pos, this->turno);
     (turno == ROJO ? pos_jugadores_rojos : pos_jugadores_azules)[nro_jugador] = prox_pos;
 	coordenadas bandera_contraria = (turno == ROJO ? pos_bandera_azul : pos_bandera_roja);
@@ -127,15 +127,15 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
-    //this->dibujame();
-    cout << "TERMINO RONDA" << endl;
+    this->dibujame();
+    cout << "TERMINO RONDA " << this->turno <<  endl;
     this->nro_ronda++;
     this->turno = (equipo == ROJO) ? AZUL : ROJO;
 	if(this->termino_juego() || this->nro_ronda > 100){
         if(this->nro_ronda > 100){
             this->ganador = EMPATE;
         }
-		for(int i=0; i<10*this->jugadores_por_equipos; i++){
+		for(int i=0; i<2*this->jugadores_por_equipos; i++){
 			sem_post(&this->turno_rojo);
             sem_post(&this->turno_azul);
 		}
@@ -144,7 +144,6 @@ void gameMaster::termino_ronda(color equipo) {
         //this->dibujame();
         for(int i=0; i<this->jugadores_por_equipos; i++){
             sem_wait(&this->barrier);
-            cout << i << endl;
         }
         cout << "UNLOCKED BARRIER" << endl;
 		for(int i=0; i<this->jugadores_por_equipos;i++){

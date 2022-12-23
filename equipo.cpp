@@ -57,7 +57,7 @@ void Equipo::jugador(int nro_jugador) {
 		// Si soy rojo espero mi semaforo. Idem si azul.
 		if(this->equipo == ROJO){
 			sem_wait(&this->belcebu->turno_rojo);
-		}else{
+		}else if(this->equipo == AZUL){
 			sem_wait(&this->belcebu->turno_azul);
 		}
 		if(this->belcebu->termino_juego()) {
@@ -71,7 +71,7 @@ void Equipo::jugador(int nro_jugador) {
 			}
 			mt.unlock();
 		}
-		assert(this->equipo == this->belcebu->equipo_jugando());
+		//assert(this->equipo == this->belcebu->equipo_jugando());
 		//cout << "J IN " << nro_jugador << " " << this->equipo << endl;
         coordenadas pos_actual = this->posiciones[nro_jugador];
         direccion dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
@@ -97,54 +97,48 @@ void Equipo::jugador(int nro_jugador) {
 				break;
 			case(RR):
 				while(1){
-					cout << "J W " << nro_jugador << " " << this->equipo << endl;
+					//wait your semaphore
+					//if vuelta_rr == false and termino_juego == false then post to belcebu and leave
+					//else if vuelta_rr == false and termino_juego then return 
+					//else if quantum>0 and vuelta_rr then move and let next player play
+					//else if quantum==0 and vuelta_rr then reset quantum, vuelt_rr = false and free all players 
+					cout << "W J " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
-					mt.lock();
-					cout << "J IN " << nro_jugador << " " << this->equipo << endl;
-					if(this->belcebu->termino_juego()){
-						for(int i=0; i<this->cant_jugadores; i++) {
-							sem_post(&this->vec_sem[i]);
-						}
+					if(!this->vuelta_rr && !this->belcebu->termino_juego()){
 						mt.unlock();
-						return;
-					}
-					if(!this->vuelta_rr){
 						sem_post(&this->belcebu->barrier);
-						cout << "J BB " << nro_jugador << " " << this->equipo << endl;
-						mt.unlock();
+						cout << "OUT FR " << nro_jugador << " " << this->equipo << endl;
 						break;
 					}
-					if(this->quantum_restante > 0 && this->vuelta_rr){
-						cout << "J IN1 " << nro_jugador << " " << this->equipo << endl;
+					mt.lock();
+					cout << "IN J " << nro_jugador << " " << this->equipo << endl;
+					if(this->belcebu->termino_juego()){
+						mt.unlock();
+						cout << "OUT FG " << nro_jugador << " " << this->equipo << endl;
+						return;
+					}
+					else if(this->quantum_restante>0 && vuelta_rr){
+						this->quantum_restante--;
 						if(this->belcebu->mov_habilitado(pos_actual, dir)) {
 							this->belcebu->mover_jugador(dir, nro_jugador);
 							this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 						}
-						this->quantum_restante--;
-						if(this->belcebu->termino_juego()){
-							cout << "J INFG " << nro_jugador << " " << this->equipo << endl;
-							for(int i=0; i<this->cant_jugadores; i++) {
-								sem_post(&this->vec_sem[i]);
-							}
-							mt.unlock();
-							return;
-						}
-						if(this->quantum_restante == 0){
-							cout << "J INFR " << nro_jugador << " " << this->equipo << endl;
-							this->vuelta_rr = false;
-							sem_post(&this->vec_sem[0]);
-							for(int i=0; i<this->cant_jugadores; i++) {
-								sem_post(&this->vec_sem[i]);
-							}
-							// ERROR ACA. ESTOY SALTNADO DEL WHILE. NO TENGO Q SALTAR DEL WHILE
-							mt.unlock();
-							this->belcebu->termino_ronda(this->equipo);
-							break;
-						}
-						cout << "J LN " << nro_jugador << " " << this->equipo << endl;
-						sem_post(&this->vec_sem[(nro_jugador+1)%this->cant_jugadores]);
 						mt.unlock();
+						sem_post(&this->vec_sem[(nro_jugador+1)%this->cant_jugadores]);
+						cout << "OUT RR " << nro_jugador << " " << this->equipo << endl;
 					}
+					else if(this->quantum_restante==0 && vuelta_rr){
+						cout << "OUT FRF " << nro_jugador << " " << this->equipo << endl;
+						this->quantum_restante = this->quantum;
+						this->vuelta_rr = false;
+						for(int i=0; i<this->cant_jugadores; i++) {
+							sem_post(&this->vec_sem[i]);
+						}
+						sem_post(&this->vec_sem[0]);
+						this->belcebu->termino_ronda(this->equipo);
+						mt.unlock();
+						//sem_post(&this->belcebu->barrier);
+					}					
 				}
 				break;
 
