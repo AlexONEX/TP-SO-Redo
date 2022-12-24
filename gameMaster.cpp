@@ -142,9 +142,10 @@ void gameMaster::termino_ronda(color equipo) {
 		}
 	}
 	else{
-        //this->dibujame();
+        this->dibujame();
         for(int i=0; i<this->jugadores_por_equipos; i++){
             sem_wait(&this->barrier);
+            cout << "BARRIER" << endl;
         }
 		for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);
