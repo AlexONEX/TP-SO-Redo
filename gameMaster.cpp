@@ -131,11 +131,11 @@ void gameMaster::termino_ronda(color equipo) {
     //this->dibujame();
     cout << "TERMINO RONDA " << this->turno <<  endl;
     this->nro_ronda++;
-	if(this->termino_juego() || this->nro_ronda > 100){
-        if(this->nro_ronda > 100){
+	if(this->termino_juego() || this->nro_ronda > 500){
+        if(this->nro_ronda > 500){
             this->ganador = EMPATE;
         }
-		for(int i=0; i<2*this->jugadores_por_equipos; i++){
+		for(int i=0; i<3*this->jugadores_por_equipos; i++){
 			sem_post(&this->turno_rojo);
             sem_post(&this->turno_azul);
 		}
@@ -146,7 +146,6 @@ void gameMaster::termino_ronda(color equipo) {
             sem_wait(&this->barrier);
         }
         this->turno = (equipo == ROJO) ? AZUL : ROJO;
-        cout << "UNLOCKED BARRIER" << endl;
 		for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);
 		}
