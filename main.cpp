@@ -6,16 +6,18 @@
 using namespace std;
 
 const estrategia strat = RR;
-const int quantum = 3;
-
 int main(){
     Config config = *(new Config());
     gameMaster belcebu = gameMaster(config);
 
+    int quantum = rand() % 9*config.cantidad_jugadores + 1; 
+    quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
 	// Creo equipos (lanza procesos)
     strat == USTEDES ? assert(config.cantidad_jugadores>1): assert(config.cantidad_jugadores>0);
 	Equipo rojo(&belcebu, ROJO, strat, config.cantidad_jugadores, quantum, config.pos_rojo);
 	Equipo azul(&belcebu, AZUL, strat, config.cantidad_jugadores, quantum, config.pos_azul);
+
+
     
     rojo.comenzar();
     azul.comenzar();

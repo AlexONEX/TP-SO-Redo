@@ -78,7 +78,7 @@ gameMaster::gameMaster(Config config) {
 
     cout << "SE HA INICIALIZADO GAMEMASTER CON EXITO" << endl;
     cout << "BOARD INITIALIZED" << endl;
-    this->dibujame();
+    //this->dibujame();
     // Insertar código que crea necesario de inicialización 
 }
 
@@ -131,7 +131,6 @@ void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
     //this->dibujame();
-    cout << "TERMINO RONDA " << this->turno <<  endl;
     this->nro_ronda++;
 	if(this->termino_juego() || this->nro_ronda > 500){
         if(this->nro_ronda > 500){
@@ -143,12 +142,10 @@ void gameMaster::termino_ronda(color equipo) {
 		}
 	}
 	else{
-        //this->dibujame();
         for(int i=0; i<this->jugadores_por_equipos; i++){
             sem_wait(&this->barrier);
         }
         this->turno = (equipo == ROJO) ? AZUL : ROJO;
-        cout << "BARRIER" << endl;
 		for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);
 		}
