@@ -6,7 +6,7 @@
 using namespace std;
 
 const estrategia strat = RR;
-const int quantum = 10;
+const int quantum = 5;
 
 int main(){
     Config config = *(new Config());

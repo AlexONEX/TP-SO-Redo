@@ -49,7 +49,7 @@ gameMaster::gameMaster(Config config) {
 	this->pos_bandera_azul = config.bandera_azul;
     this->pos_jugadores_rojos = config.pos_rojo;
     this->pos_jugadores_azules = config.pos_azul;
-
+    
 	// Seteo tablero
 	tablero.resize(x);
     for (int i = 0; i < x; ++i) {
@@ -119,6 +119,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
     (turno == ROJO ? pos_jugadores_rojos : pos_jugadores_azules)[nro_jugador] = prox_pos;
 	coordenadas bandera_contraria = (turno == ROJO ? pos_bandera_azul : pos_bandera_roja);
     if(prox_pos == bandera_contraria){
+        cout << "GANO " << this->turno << endl;
         this->ganador = this->turno;
     }
     return 	(this->termino_juego() ? 0 : nro_ronda);
@@ -127,10 +128,9 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
-    this->dibujame();
+    //this->dibujame();
     cout << "TERMINO RONDA " << this->turno <<  endl;
     this->nro_ronda++;
-    this->turno = (equipo == ROJO) ? AZUL : ROJO;
 	if(this->termino_juego() || this->nro_ronda > 100){
         if(this->nro_ronda > 100){
             this->ganador = EMPATE;
@@ -145,6 +145,7 @@ void gameMaster::termino_ronda(color equipo) {
         for(int i=0; i<this->jugadores_por_equipos; i++){
             sem_wait(&this->barrier);
         }
+        this->turno = (equipo == ROJO) ? AZUL : ROJO;
         cout << "UNLOCKED BARRIER" << endl;
 		for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);

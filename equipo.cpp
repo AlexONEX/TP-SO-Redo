@@ -60,19 +60,14 @@ void Equipo::jugador(int nro_jugador) {
 		}else if(this->equipo == AZUL){
 			sem_wait(&this->belcebu->turno_azul);
 		}
-		cout << "J PASS " << nro_jugador << " " << this->equipo << endl;
 		if(this->belcebu->termino_juego()) {
 			return;
 		}
-		if(this->strat == RR){
-			mt.lock();
-			if(!this->vuelta_rr){
-				this->vuelta_rr = true;
-				mt.unlock();
-			}
-			mt.unlock();
+		mt.lock();
+		if(this->strat==RR && !this->vuelta_rr){
+			this->vuelta_rr = true;
 		}
-		//assert(this->equipo == this->belcebu->equipo_jugando());
+		mt.unlock();
 		//cout << "J IN " << nro_jugador << " " << this->equipo << endl;
         coordenadas pos_actual = this->posiciones[nro_jugador];
         direccion dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
@@ -98,46 +93,56 @@ void Equipo::jugador(int nro_jugador) {
 				break;
 			case(RR):
 				while(1){
-					cout << "W J " << nro_jugador << " " << this->equipo << endl;
+					cout << "J W1 " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
-					if(!this->vuelta_rr && !this->belcebu->termino_juego() && !this->vuelta_rr){
-						mt.unlock();
-						sem_post(&this->belcebu->barrier);
-						cout << "OUT FR " << nro_jugador << " " << this->equipo << endl;
-						break;
-					}
+					//assert(this->belcebu->equipo_jugando() == this->equipo);
+					cout << "J W2 " << nro_jugador << " " << this->equipo << endl;
 					mt.lock();
-					cout << "IN J " << nro_jugador << " " << this->equipo << endl;
-					if(this->belcebu->termino_juego() && !this->vuelta_rr){
-						for(int i=0; i<3*this->cant_jugadores; i++) {
-							sem_post(&this->vec_sem[i]);
-						}
-						cout << "OUT FG " << nro_jugador << " " << this->equipo << endl;
+					if(this->belcebu->termino_juego()) {
 						mt.unlock();
+						cout << "J LG " << nro_jugador << " " << this->equipo << endl;
 						return;
 					}
-					else if(this->quantum_restante>0 && vuelta_rr){
-						this->quantum_restante--;
-						if(this->belcebu->mov_habilitado(pos_actual, dir)) {
+					cout << "J IN " << nro_jugador << " " << this->equipo << " " << this->quantum_restante<< endl;
+					if(!this->vuelta_rr && this->belcebu->termino_juego() == false) {
+						sem_post(&this->belcebu->barrier);
+						mt.unlock();
+						cout << "J LR " << nro_jugador << " " << this->equipo << endl;
+						break;
+					}
+					this->quantum_restante--;
+					if(this->quantum_restante>0 && this->vuelta_rr) {
+						if(this->belcebu->mov_habilitado(pos_actual, dir)){
+							cout << "J M " << nro_jugador << " " << this->equipo << endl;
 							this->belcebu->mover_jugador(dir, nro_jugador);
 							this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
+							if(this->belcebu->termino_juego()) {
+								for(int i=0; i<this->cant_jugadores; i++) {
+									sem_post(&this->vec_sem[i]);
+								}
+								cout << "J FE " << nro_jugador << " " << this->equipo << endl;
+								mt.unlock();
+								return;
+							}
 						}
-						mt.unlock();
+						//Quantum > 0 dejo pasar al proximo
 						sem_post(&this->vec_sem[(nro_jugador+1)%this->cant_jugadores]);
-						cout << "OUT RR " << nro_jugador << " " << this->equipo << " " << this->quantum_restante <<endl;
+						mt.unlock();
 					}
-					else if(this->quantum_restante==0 && vuelta_rr){
-						cout << "OUT FRF " << nro_jugador << " " << this->equipo << endl;
-						this->quantum_restante = this->quantum;
-						this->vuelta_rr = false;
+					else if(this->quantum_restante==0){
+						cout << "J R " << nro_jugador << " " << this->equipo << endl;
 						for(int i=0; i<this->cant_jugadores; i++) {
 							sem_post(&this->vec_sem[i]);
 						}
+						this->quantum_restante = this->quantum;
+						this->vuelta_rr = false;
 						sem_post(&this->vec_sem[0]);
-						this->belcebu->termino_ronda(this->equipo);
 						mt.unlock();
-						//sem_post(&this->belcebu->barrier);
-					}					
+						this->belcebu->termino_ronda(this->equipo);
+					}
+					else{
+						mt.unlock();
+					}
 				}
 				break;
 
