@@ -109,13 +109,11 @@ void gameMaster::mover_jugador_tablero(coordenadas pos_anterior, coordenadas pos
 
 
 int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
-	// Chequear que la movida sea valida. Que no se puedan mover 2 jugadores a la vez
-    // setear la variable ganador. Devolver acorde a la descripción
+
 	coordenadas pos_actual, prox_pos;
 	this->turno == ROJO ? pos_actual = this->pos_jugadores_rojos[nro_jugador] : pos_actual = this->pos_jugadores_azules[nro_jugador];
     prox_pos = this->proxima_posicion(pos_actual, dir);
-    assert(es_posicion_valida(prox_pos));
-    assert(es_color_libre(tablero[prox_pos.first][prox_pos.second]));
+    assert(this->es_color_libre(this->tablero[prox_pos.first][prox_pos.second]));
     mover_jugador_tablero(pos_actual, prox_pos, this->turno);
     (turno == ROJO ? pos_jugadores_rojos : pos_jugadores_azules)[nro_jugador] = prox_pos;
 	coordenadas bandera_contraria = (turno == ROJO ? pos_bandera_azul : pos_bandera_roja);
@@ -129,6 +127,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
+    cout << "FR " << equipo << endl;
     //this->dibujame();
     this->nro_ronda++;
 	if(this->termino_juego() || this->nro_ronda > 500){
@@ -216,4 +215,8 @@ color gameMaster::dame_equipo_actual() {
 
 int gameMaster::get_nro_ronda() {
     return this->nro_ronda;
+}
+
+coordenadas gameMaster::pos_jugador(color equipo, int nro_jugador) {
+    return (equipo == ROJO) ? this->pos_jugadores_rojos[nro_jugador] : this->pos_jugadores_azules[nro_jugador];
 }

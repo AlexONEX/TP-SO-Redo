@@ -40,13 +40,11 @@ class Equipo {
 		void comenzar();
 		void terminar();
 		int jugador_minima_distancia();
-		int jugador_minima_distancia2();
 		int jugador_maxima_distancia();	
 		bool jugador_rodeado(int nro_jugador);
 
 		// crear jugadores
 		int jugador_min_distancia;
-		int jugador_min_distancia2;
 		int jugador_max_distancia;
 		bool vuelta_rr;
 		vector<sem_t> vec_sem;

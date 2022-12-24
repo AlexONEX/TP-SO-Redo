@@ -17,7 +17,6 @@ private:
     // Atributos Privados
     int nro_ronda = 0;
     int x, y, jugadores_por_equipos;
-    vector<coordenadas> pos_jugadores_azules, pos_jugadores_rojos;
     color turno;
     estrategia strat;
 	coordenadas pos_bandera_roja, pos_bandera_azul; 
@@ -41,10 +40,11 @@ public:
     int get_nro_ronda();
     color ganador = INDEFINIDO;
     sem_t barrier;
-    bool vuelta_rr_a;
-    bool vuelta_rr_r;
     //Mover a privado. Arreglar checkeo en RR.
     vector<vector<color>> tablero;
+    //Mover a privado. Checkeo longest
+    vector<coordenadas> pos_jugadores_azules, pos_jugadores_rojos;
+
 
     //
     //...
@@ -65,6 +65,7 @@ public:
     color dame_equipo_actual();
     color equipo_jugando();
     coordenadas pos_bandera(color equipo);
+    coordenadas pos_jugador(color equipo, int nro_jugador);
     //
     //...
     //
