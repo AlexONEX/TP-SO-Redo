@@ -42,7 +42,6 @@ class Equipo {
 		int jugador_minima_distancia();
 		int jugador_minima_distancia2();
 		int jugador_maxima_distancia();	
-		int fibbonacci_number_dp(int n);
 		bool jugador_rodeado(int nro_jugador);
 
 		// crear jugadores

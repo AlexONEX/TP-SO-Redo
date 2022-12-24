@@ -77,7 +77,6 @@ gameMaster::gameMaster(Config config) {
     assert(sem_init(&this->barrier, 0, 1) == 0);
 
     cout << "SE HA INICIALIZADO GAMEMASTER CON EXITO" << endl;
-    cout << "BOARD INITIALIZED" << endl;
     //this->dibujame();
     // Insertar código que crea necesario de inicialización 
 }
@@ -136,7 +135,7 @@ void gameMaster::termino_ronda(color equipo) {
         if(this->nro_ronda > 500){
             this->ganador = EMPATE;
         }
-		for(int i=0; i<3*this->jugadores_por_equipos; i++){
+		for(int i=0; i<this->jugadores_por_equipos; i++){
 			sem_post(&this->turno_rojo);
             sem_post(&this->turno_azul);
 		}
@@ -146,6 +145,7 @@ void gameMaster::termino_ronda(color equipo) {
             sem_wait(&this->barrier);
         }
         this->turno = (equipo == ROJO) ? AZUL : ROJO;
+        //cout << "FR" << endl;
 		for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);
 		}

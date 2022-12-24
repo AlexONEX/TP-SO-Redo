@@ -94,11 +94,11 @@ void Equipo::jugador(int nro_jugador) {
 					sem_wait(&this->vec_sem[nro_jugador]);
 					mt.lock();					
 					if(this->belcebu->termino_juego()) {
-						mt.unlock();
 						for(int i=0; i<this->cant_jugadores; i++) {
 							sem_post(&this->barrier);
 							sem_post(&this->vec_sem[i]);
 						}
+						mt.unlock();
 						return;
 					}
 					if(!this->vuelta_rr || this->equipo != this->belcebu->equipo_jugando()) {
@@ -140,6 +140,7 @@ void Equipo::jugador(int nro_jugador) {
 						mt.unlock();
 					}
 				}
+				//cout << "J TRYP " << nro_jugador << " " << this->equipo <<  endl;
 				mt.lock();
 				this->cant_jugadores_ya_jugaron++;
 				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores){
@@ -150,6 +151,7 @@ void Equipo::jugador(int nro_jugador) {
 				}
 				mt.unlock();
 				sem_wait(&this->barrier);
+				//cout << "J PASS " << nro_jugador << " " << this->equipo <<  endl;
 				break;
 
 			case(SHORTEST):
@@ -335,16 +337,6 @@ int Equipo::jugador_maxima_distancia() {
     }
 	assert(nro_jug != -1);
     return nro_jug;
-}
-
-int Equipo::fibbonacci_number_dp(int n) {
-	int fib[n+1];
-	fib[0] = 1;
-	fib[1] = 2;
-	for (int i = 2; i <= n; i++) {
-		fib[i] = fib[i-1] + fib[i-2];
-	}
-	return fib[n];
 }
 
 void Equipo::buscar_bandera_contraria(int nro_jugador) {
