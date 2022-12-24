@@ -9,7 +9,7 @@
 i=0
 while [ $i -lt 500 ]
     do
-        ./test_tp_sistemas 3
+        ./test_tp_sistemas 1
         #echo $i
         i=$((i+1))
     done

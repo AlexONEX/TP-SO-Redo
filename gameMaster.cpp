@@ -118,7 +118,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
     (turno == ROJO ? pos_jugadores_rojos : pos_jugadores_azules)[nro_jugador] = prox_pos;
 	coordenadas bandera_contraria = (turno == ROJO ? pos_bandera_azul : pos_bandera_roja);
     if(prox_pos == bandera_contraria){
-        cout << "GANO " << this->turno << endl;
+        //cout << "GANO " << this->turno << endl;
         this->ganador = this->turno;
     }
     return 	(this->termino_juego() ? 0 : nro_ronda);
@@ -127,7 +127,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
-    cout << "FR " << equipo << endl;
+    //cout << "FR " << equipo << endl;
     //this->dibujame();
     this->nro_ronda++;
 	if(this->termino_juego() || this->nro_ronda > 500){

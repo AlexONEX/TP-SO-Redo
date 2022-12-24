@@ -165,7 +165,8 @@ void Equipo::jugador(int nro_jugador) {
 				if(nro_jugador==this->jugador_min_distancia && this->belcebu->mov_habilitado(pos_actual, dir) && this->equipo==this->belcebu->equipo_jugando()) {
 					this->belcebu->mover_jugador(dir, nro_jugador);
 					this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
-					this->jugador_min_distancia = this->jugador_minima_distancia();
+					assert(this->posiciones[nro_jugador] == this->belcebu->pos_jugador(this->equipo, nro_jugador));
+					this->jugador_min_distancia = this->jugador_minima_distancia();				
 				}
 				this->cant_jugadores_ya_jugaron++;
 				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores || this->belcebu->termino_juego()) {
