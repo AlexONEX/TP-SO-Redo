@@ -103,18 +103,19 @@ void Equipo::jugador(int nro_jugador) {
 						mt.unlock();
 						return;
 					}
-					//cout << "J INRR " << nro_jugador << " " << this->equipo << " " << this->quantum_restante<< endl;
 					if(!this->vuelta_rr && this->belcebu->termino_juego() == false) {
 						sem_post(&this->belcebu->barrier);
 						mt.unlock();
 						break;
 					}
+					cout << "J IN " << nro_jugador << " " << this->equipo << " " << this->quantum_restante<< endl;
 					this->quantum_restante--;
 					if(this->quantum_restante>0 && this->vuelta_rr) {
 						if(this->belcebu->mov_habilitado(pos_actual, dir)){
 							this->belcebu->mover_jugador(dir, nro_jugador);
 							this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 							if(this->belcebu->termino_juego()) {
+								cout << "J FG " << nro_jugador << " " << this->equipo << " " << this->quantum_restante<< endl;
 								for(int i=0; i<2*this->cant_jugadores; i++) {
 									sem_post(&this->vec_sem[i%this->cant_jugadores]);
 								}
@@ -123,10 +124,12 @@ void Equipo::jugador(int nro_jugador) {
 								return;
 							}
 						}
+						cout << "J LR " << nro_jugador << " " << this->equipo << " " << this->quantum_restante<< endl;
 						sem_post(&this->vec_sem[(nro_jugador+1)%this->cant_jugadores]);
 						mt.unlock();
 					}
 					else if(this->quantum_restante==0){
+						cout << "J FR " << nro_jugador << " " << this->equipo << " " << this->quantum_restante<< endl;
 						for(int i=0; i<this->cant_jugadores; i++) {
 							sem_post(&this->vec_sem[i]);
 						}
@@ -140,7 +143,8 @@ void Equipo::jugador(int nro_jugador) {
 						mt.unlock();
 					}
 				}
-				//cout << "J L " << nro_jugador << " " << this->equipo << endl;
+				cout << "J L " << nro_jugador << " " << this->equipo << endl;
+				//mt.unlock();
 				break;
 
 			case(SHORTEST):
