@@ -58,9 +58,11 @@ void Equipo::jugador(int nro_jugador) {
 	auto end = chrono::high_resolution_clock::now();
 	this->tiempo_busqueda += chrono::duration_cast<chrono::microseconds>(end - start).count();
 	this->jugadores_buscaron++;
+	/*
 	if(this->jugadores_buscaron == this->cant_jugadores) {
 		cout << "Tiempo Busqueda: " << this->tiempo_busqueda << endl;
 	}
+	*/
 	this->bandera_contraria_encontrada.unlock();
 	if(this->belcebu->termino_juego()) {
 		return;
@@ -89,29 +91,29 @@ void Equipo::jugador(int nro_jugador) {
 					sem_wait(&this->vec_sem[nro_jugador]);
 					mt.lock();
 					if(this->belcebu->termino_juego()) {
-						for(int i=0; i<this->cant_jugadores; i++) {
+						for(int i=0; i<2*this->cant_jugadores; i++) {
 							sem_post(&this->barrier);
-							sem_post(&this->vec_sem[i]);
+							sem_post(&this->vec_sem[i%this->cant_jugadores]);
 						}
 						mt.unlock();
 						return;
 					}
 					if(!this->vuelta_rr || this->equipo != this->belcebu->equipo_jugando()) {
-						//sem_post(&this->belcebu->barrier);
 						mt.unlock();
 						break;
 					}
 					assert(this->vuelta_rr && this->equipo == this->belcebu->equipo_jugando());
-					this->quantum_restante--;
 					pos_actual = this->posiciones[nro_jugador];
 					dir = apuntar_a(pos_actual, this->pos_bandera_contraria);					
 					if(this->quantum_restante>0 && this->vuelta_rr && this->equipo == this->belcebu->equipo_jugando()) {
+						this->quantum_restante--;
 						if(this->belcebu->mov_habilitado(pos_actual, dir)){
 							this->belcebu->mover_jugador(dir, nro_jugador);
-							this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
+							this->posiciones[nro_jugador] = this->belcebu->pos_jugador(this->equipo, nro_jugador);
+							/**/
 							if(this->belcebu->termino_juego()) {
 								this->vuelta_rr = false;
-								for(int i=0; i<3*this->cant_jugadores; i++) {
+								for(int i=0; i<this->cant_jugadores; i++) {
 									sem_post(&this->vec_sem[i%this->cant_jugadores]);
 									sem_post(&this->barrier);
 								}
@@ -136,7 +138,6 @@ void Equipo::jugador(int nro_jugador) {
 				}
 				mt.lock();
 				this->cant_jugadores_ya_jugaron++;
-				assert(this->cant_jugadores_ya_jugaron <= this->cant_jugadores && this->quantum_restante == this->quantum && !this->vuelta_rr);
 				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores){
 					this->cant_jugadores_ya_jugaron = 0;
 					this->vuelta_rr = false;
@@ -148,6 +149,7 @@ void Equipo::jugador(int nro_jugador) {
 				assert(this->cant_jugadores_ya_jugaron <= this->cant_jugadores && this->quantum_restante == this->quantum && !this->vuelta_rr);
 				sem_post(&this->belcebu->barrier);
 				sem_wait(&this->barrier);
+
 				break;
 
 			case(SECUENCIAL):
@@ -364,7 +366,6 @@ void Equipo::buscar_bandera_contraria(int nro_jugador) {
 }
 
 void Equipo::buscar_bandera_contraria_secuencial(){
-	//Medir tiempos de busqueda
 	auto start = std::chrono::high_resolution_clock::now();
 	int tam_x = belcebu->getTamx();
 	int tam_y = belcebu->getTamy();
