@@ -64,9 +64,6 @@ void Equipo::jugador(int nro_jugador) {
 	}
 	*/
 	this->bandera_contraria_encontrada.unlock();
-	if(this->belcebu->termino_juego()) {
-		return;
-	}
 	while(!this->belcebu->termino_juego()) { // Chequear que no haya una race condition en gameMaster
 		if(this->equipo == ROJO){
 			sem_wait(&this->belcebu->turno_rojo);
@@ -201,10 +198,10 @@ void Equipo::jugador(int nro_jugador) {
 				// ...
 				//
 				mt.lock();
-				dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
-				assert(this->posiciones[nro_jugador] == this->belcebu->pos_jugador(this->equipo, nro_jugador));				
 				if(nro_jugador==this->jugador_min_distancia) {
 					for(int i=0; i<this->quantum; i++) {
+						pos_actual = this->belcebu->pos_jugador(this->equipo, nro_jugador);
+						dir = this->apuntar_a(pos_actual, this->pos_bandera_contraria);
 						if(!this->belcebu->mov_habilitado(pos_actual, dir)){
 							break;
 						}

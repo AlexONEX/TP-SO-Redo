@@ -17,8 +17,11 @@ int main(int argc, char *argv[]){
         quantum = rand() % 9*config.cantidad_jugadores + 1; 
         quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
 	}
+    else{
+        quantum = config.cantidad_jugadores;
+    }
     
-    quantum = config.cantidad_jugadores/2;
+    //quantum = config.cantidad_jugadores/2;
     //quantum = 1;
     
     // Creo equipos (lanza procesos)

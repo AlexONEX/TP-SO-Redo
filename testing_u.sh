@@ -5,7 +5,7 @@ i=0
 while [ $i -lt 1000 ]
     do
     ./test_tp_sistemas 3
-    echo "Round Robin"
+    echo "Ustedes"
     echo $i
     i=$((i+1))
     done
