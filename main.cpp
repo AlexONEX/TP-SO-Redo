@@ -19,7 +19,7 @@ int main(int argc, char *argv[]){
 	}
     
     //quantum = config.cantidad_jugadores/2;
-    //quantum = 1;
+    quantum = 1;
     
     // Creo equipos (lanza procesos)
     
