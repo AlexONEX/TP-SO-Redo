@@ -58,10 +58,10 @@ void Equipo::jugador(int nro_jugador) {
 	auto end = chrono::high_resolution_clock::now();
 	this->tiempo_busqueda += chrono::duration_cast<chrono::microseconds>(end - start).count();
 	this->jugadores_buscaron++;
-	this->bandera_contraria_encontrada.unlock();
 	if(this->jugadores_buscaron == this->cant_jugadores) {
 		cout << "Tiempo Busqueda: " << this->tiempo_busqueda << endl;
 	}
+	this->bandera_contraria_encontrada.unlock();
 	if(this->belcebu->termino_juego()) {
 		return;
 	}
