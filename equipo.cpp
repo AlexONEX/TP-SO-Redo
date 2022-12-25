@@ -86,24 +86,23 @@ void Equipo::jugador(int nro_jugador) {
 		switch(this->strat) {
 			//SECUENCIAL,RR,SHORTEST,USTEDES
 			case(RR):
-				cout << "J RR " << nro_jugador << " " << this->equipo << endl;
+				//cout << "J RR " << nro_jugador << " " << this->equipo << endl;
 				while(1){
 					//cout << "J RR " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
 					mt.lock();
-					cout << "J INA " << nro_jugador << " " << this->equipo << endl;
+					//cout << "J INA " << nro_jugador << " " << this->equipo << endl;
 					if(this->belcebu->termino_juego()) {
 						for(int i=0; i<this->cant_jugadores; i++) {
 							sem_post(&this->barrier);
 							sem_post(&this->vec_sem[i]);
 						}
-						cout << "J FIN " << nro_jugador << " " << this->equipo << endl;
+						//cout << "J FIN " << nro_jugador << " " << this->equipo << endl;
 						mt.unlock();
 						return;
 					}
-					if(!this->vuelta_rr || this->equipo != this->belcebu->equipo_jugando()) {
-						cout << "J TA " << nro_jugador << " " << this->equipo << " " << endl;
-						//sem_post(&this->belcebu->barrier);
+					if(!this->vuelta_rr) {
+						//cout << "J TA " << nro_jugador << " " << this->equipo << " " << endl;
 						mt.unlock();
 						break;
 					}
@@ -136,7 +135,6 @@ void Equipo::jugador(int nro_jugador) {
 						this->quantum_restante = this->quantum;
 						this->vuelta_rr = false;
 						sem_post(&this->vec_sem[0]);
-						//cout << "FR " << nro_jugador << " " << this->equipo << endl;
 						mt.unlock();
 						this->belcebu->termino_ronda(this->equipo);
 					}
@@ -159,7 +157,6 @@ void Equipo::jugador(int nro_jugador) {
 				assert(this->cant_jugadores_ya_jugaron <= this->cant_jugadores && this->quantum_restante == this->quantum && !this->vuelta_rr);
 				sem_post(&this->belcebu->barrier);
 				sem_wait(&this->barrier);
-				cout << "J PASS " << nro_jugador << " " << this->equipo <<  endl;
 				break;
 
 			case(SECUENCIAL):
