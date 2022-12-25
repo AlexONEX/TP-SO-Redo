@@ -6,7 +6,7 @@
 using namespace std;
 int quantum;
 
-estrategia strat = USTEDES;
+estrategia strat = RR;
 int main(int argc, char *argv[]){
     //receive strat trough stdin
     strat = (estrategia) atoi(argv[1]);
@@ -18,7 +18,8 @@ int main(int argc, char *argv[]){
         quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
 	}
     
-    quantum = 1;
+    //quantum = config.cantidad_jugadores/2;
+    //quantum = 1;
     
     // Creo equipos (lanza procesos)
     
@@ -35,6 +36,6 @@ int main(int argc, char *argv[]){
 	azul.terminar();	
     //belcebu.play();
 
-    belcebu.ganador != EMPATE ? cout << "Bandera capturada por el equipo "<< belcebu.ganador << ". Felicidades!" << endl : cout << "Empate!" << endl;
+    belcebu.ganador != EMPATE ? cout << "Gano el equipo "<< belcebu.ganador << endl : cout << "Empate!" << endl;
 
 }

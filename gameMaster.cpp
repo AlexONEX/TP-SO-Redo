@@ -76,7 +76,7 @@ gameMaster::gameMaster(Config config) {
 	assert(sem_init(&this->turno_rojo, 0, 0) == 0);
     assert(sem_init(&this->barrier, 0, 1) == 0);
 
-    cout << "SE HA INICIALIZADO GAMEMASTER CON EXITO" << endl;
+    cout << "Init GameMaster" << endl;
     // Insertar código que crea necesario de inicialización 
 }
 
