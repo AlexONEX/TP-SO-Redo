@@ -136,7 +136,7 @@ void Equipo::jugador(int nro_jugador) {
 						this->quantum_restante = this->quantum;
 						this->vuelta_rr = false;
 						sem_post(&this->vec_sem[0]);
-						cout << "FR " << nro_jugador << " " << this->equipo << endl;
+						//cout << "FR " << nro_jugador << " " << this->equipo << endl;
 						mt.unlock();
 						this->belcebu->termino_ronda(this->equipo);
 					}
