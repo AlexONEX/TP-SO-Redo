@@ -6,6 +6,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <chrono>
 #include "definiciones.h"
 #include "gameMaster.h"
 #include <unistd.h>
@@ -44,8 +45,11 @@ class Equipo {
 		bool jugador_rodeado(int nro_jugador);
 
 		// crear jugadores
+		float tiempo_busqueda;
+		int jugadores_buscaron;
 		int jugador_min_distancia;
 		int jugador_max_distancia;
+
 		bool vuelta_rr;
 		vector<sem_t> vec_sem;
 		vector<bool> vec_bool;

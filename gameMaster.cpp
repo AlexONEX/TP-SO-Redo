@@ -77,7 +77,6 @@ gameMaster::gameMaster(Config config) {
     assert(sem_init(&this->barrier, 0, 1) == 0);
 
     cout << "SE HA INICIALIZADO GAMEMASTER CON EXITO" << endl;
-    //this->dibujame();
     // Insertar código que crea necesario de inicialización 
 }
 
@@ -127,7 +126,7 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
 void gameMaster::termino_ronda(color equipo) {
 	// FIXME: Hacer chequeo de que es el color correcto que está llamando
 	// FIXME: Hacer chequeo que hayan terminado todos los jugadores del equipo o su quantum (via mover_jugador)
-    cout << "FR " << equipo << endl;
+    //cout << "FR " << equipo << endl;
     //this->dibujame();
     assert(equipo == this->turno);
     this->nro_ronda++;

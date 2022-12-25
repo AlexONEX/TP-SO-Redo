@@ -32,6 +32,8 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	this->vuelta_rr = true;
 	assert(this->posiciones.size() == this->cant_jugadores);
 	this->vec_bool = vector<bool>(this->cant_jugadores, false);
+	this->tiempo_busqueda = 0;
+	this->jugadores_buscaron = 0;
 	
 	//this->pos_bandera_contraria = this->belcebu->pos_bandera(this->contrario);
 	this->jugador_min_distancia  = this->jugador_minima_distancia();
@@ -49,10 +51,19 @@ void Equipo::jugador(int nro_jugador) {
 	//
 	// ...
 	//
+	auto start = chrono::high_resolution_clock::now();
 	buscar_bandera_contraria(nro_jugador);
 	this->bandera_contraria_encontrada.lock();
+	auto end = chrono::high_resolution_clock::now();
+	this->tiempo_busqueda += chrono::duration_cast<chrono::microseconds>(end - start).count();
+	this->jugadores_buscaron++;
 	this->bandera_contraria_encontrada.unlock();
-
+	if(this->jugadores_buscaron == this->cant_jugadores) {
+		cout << "Tiempo Busqueda: " << this->tiempo_busqueda << endl;
+	}
+	if(this->belcebu->termino_juego()) {
+		return;
+	}
 	while(!this->belcebu->termino_juego()) { // Chequear que no haya una race condition en gameMaster
 		if(this->equipo == ROJO){
 			sem_wait(&this->belcebu->turno_rojo);
