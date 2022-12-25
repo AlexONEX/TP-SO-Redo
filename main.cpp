@@ -6,13 +6,13 @@
 using namespace std;
 int quantum;
 
-estrategia strat = RR;
+estrategia strat = USTEDES;
 int main(int argc, char *argv[]){
     //receive strat trough stdin
     strat = (estrategia) atoi(argv[1]);
     Config config = *(new Config());
     gameMaster belcebu = gameMaster(config);
-
+    int quantum = config.cantidad_jugadores/2;
     if(strat == RR){
         // Por enunciado si quantum < cantidad de jugadores, quantum = cantidad de jugadores
         quantum = rand() % 9*config.cantidad_jugadores + 1; 
