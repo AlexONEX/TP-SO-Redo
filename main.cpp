@@ -18,11 +18,10 @@ int main(int argc, char *argv[]){
         quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
 	}
     else{
+        // Si es strat == USTEDES, tarda muchisimo con poco Quantum
         quantum = config.cantidad_jugadores;
     }
-    
-    //quantum = config.cantidad_jugadores/2;
-    //quantum = 1;
+
     
     // Creo equipos (lanza procesos)
     
