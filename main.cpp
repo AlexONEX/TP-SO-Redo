@@ -29,8 +29,8 @@ int main(int argc, char *argv[]){
 	Equipo rojo(&belcebu, ROJO, strat, config.cantidad_jugadores, quantum, config.pos_rojo);
 	Equipo azul(&belcebu, AZUL, strat, config.cantidad_jugadores, quantum, config.pos_azul);
     
-    //rojo.buscar_bandera_contraria_secuencial();
-    //azul.buscar_bandera_contraria_secuencial();
+    rojo.buscar_bandera_contraria_secuencial();
+    azul.buscar_bandera_contraria_secuencial();
 
     rojo.comenzar();
     azul.comenzar();

@@ -8,4 +8,3 @@ rm -f CMakeCache.txt
 cmake .
 cmake --build .
 make
-./testing.sh    
