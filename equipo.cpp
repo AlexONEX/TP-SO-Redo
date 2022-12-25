@@ -85,23 +85,19 @@ void Equipo::jugador(int nro_jugador) {
 		direccion dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
 		switch(this->strat) {
 			case(RR):
-				//cout << "J RR " << nro_jugador << " " << this->equipo << endl;
 				while(1){
-					//cout << "J RR " << nro_jugador << " " << this->equipo << endl;
 					sem_wait(&this->vec_sem[nro_jugador]);
 					mt.lock();
-					//cout << "J INA " << nro_jugador << " " << this->equipo << endl;
 					if(this->belcebu->termino_juego()) {
 						for(int i=0; i<this->cant_jugadores; i++) {
 							sem_post(&this->barrier);
 							sem_post(&this->vec_sem[i]);
 						}
-						//cout << "J FIN " << nro_jugador << " " << this->equipo << endl;
 						mt.unlock();
 						return;
 					}
-					if(!this->vuelta_rr) {
-						//cout << "J TA " << nro_jugador << " " << this->equipo << " " << endl;
+					if(!this->vuelta_rr || this->equipo != this->belcebu->equipo_jugando()) {
+						//sem_post(&this->belcebu->barrier);
 						mt.unlock();
 						break;
 					}
@@ -115,7 +111,7 @@ void Equipo::jugador(int nro_jugador) {
 							this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
 							if(this->belcebu->termino_juego()) {
 								this->vuelta_rr = false;
-								for(int i=0; i<this->cant_jugadores; i++) {
+								for(int i=0; i<3*this->cant_jugadores; i++) {
 									sem_post(&this->vec_sem[i%this->cant_jugadores]);
 									sem_post(&this->barrier);
 								}
@@ -139,14 +135,10 @@ void Equipo::jugador(int nro_jugador) {
 					}
 				}
 				mt.lock();
-				if(!this->vec_bool[nro_jugador]){
-					this->cant_jugadores_ya_jugaron++;
-					this->vec_bool[nro_jugador] = true;
-				}
+				this->cant_jugadores_ya_jugaron++;
 				assert(this->cant_jugadores_ya_jugaron <= this->cant_jugadores && this->quantum_restante == this->quantum && !this->vuelta_rr);
 				if(this->cant_jugadores_ya_jugaron == this->cant_jugadores){
 					this->cant_jugadores_ya_jugaron = 0;
-					this->vec_bool = vector<bool>(this->cant_jugadores, false);
 					this->vuelta_rr = false;
 					for(int i=0; i<this->cant_jugadores; i++){
 						sem_post(&this->barrier);
@@ -156,7 +148,8 @@ void Equipo::jugador(int nro_jugador) {
 				assert(this->cant_jugadores_ya_jugaron <= this->cant_jugadores && this->quantum_restante == this->quantum && !this->vuelta_rr);
 				sem_post(&this->belcebu->barrier);
 				sem_wait(&this->barrier);
-				break;		
+				break;
+
 			case(SECUENCIAL):
 				mt.lock();
 				if(this->belcebu->mov_habilitado(pos_actual, dir) && this->belcebu->termino_juego() == false) {
