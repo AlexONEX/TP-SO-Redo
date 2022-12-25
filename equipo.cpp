@@ -34,6 +34,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	this->vec_bool = vector<bool>(this->cant_jugadores, false);
 	this->tiempo_busqueda = 0;
 	this->jugadores_buscaron = 0;
+	this->jugador_busca = -1;
 	
 	//this->pos_bandera_contraria = this->belcebu->pos_bandera(this->contrario);
 	this->jugador_min_distancia  = this->jugador_minima_distancia();
@@ -366,5 +367,31 @@ void Equipo::buscar_bandera_contraria(int nro_jugador) {
 				}
 			}
 		}	
+	}
+}
+
+void Equipo::buscar_bandera_contraria_secuencial(){
+	//Medir tiempos de busqueda
+	auto start = std::chrono::high_resolution_clock::now();
+	int tam_x = belcebu->getTamx();
+	int tam_y = belcebu->getTamy();
+	for(int i = 0; i < tam_x; i++){
+		for(int j = 0; j < tam_y; j++){
+			if(equipo == ROJO){
+				if (this->belcebu->en_posicion(make_pair(i, j)) == BANDERA_AZUL){
+					this->pos_bandera_contraria = make_pair(i, j);
+					auto end = std::chrono::high_resolution_clock::now();
+					cout << "Tiempo Secuencial " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << endl;
+					return;
+				}
+			} else {
+				if (this->belcebu->en_posicion(make_pair(i, j)) == BANDERA_ROJA){
+					this->pos_bandera_contraria = make_pair(i, j);
+					auto end = std::chrono::high_resolution_clock::now();
+					cout << "Tiempo Secuencial " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << endl;
+					return;
+				}
+			}
+		}
 	}
 }

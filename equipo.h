@@ -32,6 +32,7 @@ class Equipo {
 		direccion apuntar_a(coordenadas pos2, coordenadas pos1);
 		void jugador(int nro_jugador);
 		void buscar_bandera_contraria(int nro_jugador);
+		void buscar_bandera_contraria_secuencial();
 		//
 		// ...
 		//
@@ -47,6 +48,7 @@ class Equipo {
 		// crear jugadores
 		float tiempo_busqueda;
 		int jugadores_buscaron;
+		int jugador_busca;
 		int jugador_min_distancia;
 		int jugador_max_distancia;
 
