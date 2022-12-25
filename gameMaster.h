@@ -20,6 +20,8 @@ private:
     color turno;
     estrategia strat;
 	coordenadas pos_bandera_roja, pos_bandera_azul; 
+    vector<coordenadas> pos_jugadores_azules, pos_jugadores_rojos;
+    vector<vector<color>> tablero;
     //
     //...
     //
@@ -40,12 +42,6 @@ public:
     int get_nro_ronda();
     color ganador = INDEFINIDO;
     sem_t barrier;
-    //Mover a privado. Arreglar checkeo en RR.
-    vector<vector<color>> tablero;
-    //Mover a privado. Checkeo longest
-    vector<coordenadas> pos_jugadores_azules, pos_jugadores_rojos;
-
-
     //
     //...
     //

@@ -40,8 +40,8 @@ def armarTest(nombreTest, valorX, valorY, cantJugadores):
 
 def crearTests(n):
     for i in range(n):
-        tamTablero = random.randint(1, 100)
-        cantJugadores = min(int(tamTablero/2),  12)
-        armarTest(str(i) + ".csv", tamTablero, tamTablero, random.randint(1, 12))
+        tamTablero = random.randint(10, 1000)
+        cantJugadores = min(int(tamTablero/2),  40)
+        armarTest(str(i) + ".csv", tamTablero, tamTablero, random.randint(1, 15))
 
 crearTests(10)

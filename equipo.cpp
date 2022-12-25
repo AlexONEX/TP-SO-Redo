@@ -381,14 +381,14 @@ void Equipo::buscar_bandera_contraria_secuencial(){
 				if (this->belcebu->en_posicion(make_pair(i, j)) == BANDERA_AZUL){
 					this->pos_bandera_contraria = make_pair(i, j);
 					auto end = std::chrono::high_resolution_clock::now();
-					cout << "Tiempo Secuencial " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << endl;
+					cout << "Tiempo Secuencial " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << endl;
 					return;
 				}
 			} else {
 				if (this->belcebu->en_posicion(make_pair(i, j)) == BANDERA_ROJA){
 					this->pos_bandera_contraria = make_pair(i, j);
 					auto end = std::chrono::high_resolution_clock::now();
-					cout << "Tiempo Secuencial " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << endl;
+					cout << "Tiempo Secuencial " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << endl;
 					return;
 				}
 			}
