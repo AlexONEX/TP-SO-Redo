@@ -1,3 +1,0 @@
-Para testear sincro primero testeamos que la crit sincronice correctamente sin realizar movimientos.
-Testeo para 3, 10, 20 jugadores. Checkeo que para cada estrategia se cumpla la entrada y salida correcta de jugadores escribiendo en un text file
-y con un script de python cuento apariciones de 0 y 1 en la respectiva columna de colores. 
