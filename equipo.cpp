@@ -211,7 +211,7 @@ void Equipo::jugador(int nro_jugador) {
 				pos_actual = this->posiciones[nro_jugador];
 				dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
 				if(nro_jugador==this->jugador_min_distancia) {
-					for(int i=0; i<this->cant_jugadores; i++) {
+					for(int i=0; i<this->quantum; i++) {
 						if(!this->belcebu->mov_habilitado(pos_actual, dir)){
 							break;
 						}
