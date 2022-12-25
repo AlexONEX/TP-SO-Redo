@@ -2,6 +2,7 @@
 
 # Pass the strategy number as a parameter to the binary. 0 Secuencial, 1 RR, 2 SHORTEST, 3 USTEDES
 while(true)
+    do
     i=0
     while [ $i -lt 400 ]
         do
