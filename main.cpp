@@ -4,18 +4,19 @@
 #include "config.h"
 #include <assert.h>
 using namespace std;
+int quantum;
 
-estrategia strat = RR;
+estrategia strat = USTEDES;
 int main(int argc, char *argv[]){
     //receive strat trough stdin
     strat = (estrategia) atoi(argv[1]);
     Config config = *(new Config());
     gameMaster belcebu = gameMaster(config);
 
-    int quantum = rand() % 9*config.cantidad_jugadores + 1; 
-    quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
-	//int quantum = config.cantidad_jugadores/2;
-    //int quantum = 1;
+    //quantum = rand() % 9*config.cantidad_jugadores + 1; 
+    //quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
+	//quantum = config.cantidad_jugadores/2;
+    quantum = 1;
     // Creo equipos (lanza procesos)
     strat == USTEDES ? assert(config.cantidad_jugadores>1): assert(config.cantidad_jugadores>0);
 	Equipo rojo(&belcebu, ROJO, strat, config.cantidad_jugadores, quantum, config.pos_rojo);
