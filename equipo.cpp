@@ -31,7 +31,6 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	this->cant_jugadores_ya_jugaron = 0;
 	this->vuelta_rr = true;
 	assert(this->posiciones.size() == this->cant_jugadores);
-	this->vec_bool = vector<bool>(this->cant_jugadores, false);
 	this->tiempo_busqueda = 0;
 	this->jugadores_buscaron = 0;
 	this->jugador_busca = -1;
@@ -45,6 +44,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
         assert(sem_init(&this->vec_sem[i], 0, 0) == 0);
     }
 	assert(sem_init(&this->barrier, 0, 0) == 0);
+	this->vec_bool = vector<bool>(this->cant_jugadores, false);
 }
 
 
@@ -84,7 +84,6 @@ void Equipo::jugador(int nro_jugador) {
 		coordenadas pos_actual = this->posiciones[nro_jugador];
 		direccion dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
 		switch(this->strat) {
-			//SECUENCIAL,RR,SHORTEST,USTEDES
 			case(RR):
 				//cout << "J RR " << nro_jugador << " " << this->equipo << endl;
 				while(1){
@@ -157,8 +156,7 @@ void Equipo::jugador(int nro_jugador) {
 				assert(this->cant_jugadores_ya_jugaron <= this->cant_jugadores && this->quantum_restante == this->quantum && !this->vuelta_rr);
 				sem_post(&this->belcebu->barrier);
 				sem_wait(&this->barrier);
-				break;
-
+				break;		
 			case(SECUENCIAL):
 				mt.lock();
 				if(this->belcebu->mov_habilitado(pos_actual, dir) && this->belcebu->termino_juego() == false) {
@@ -216,7 +214,7 @@ void Equipo::jugador(int nro_jugador) {
 							break;
 						}
 						this->belcebu->mover_jugador(dir, i);
-						this->posiciones[nro_jugador] = this->belcebu->proxima_posicion(pos_actual, dir);
+						this->posiciones[nro_jugador] = this->belcebu->pos_jugador(this->equipo, nro_jugador);
 						this->jugador_min_distancia = this->jugador_minima_distancia();
 					}
 					assert(this->posiciones[nro_jugador] == this->belcebu->pos_jugador(this->equipo, nro_jugador));				

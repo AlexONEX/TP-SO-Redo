@@ -12,12 +12,12 @@ int main(int argc, char *argv[]){
     strat = (estrategia) atoi(argv[1]);
     Config config = *(new Config());
     gameMaster belcebu = gameMaster(config);
-    int quantum = config.cantidad_jugadores/2;
     if(strat == RR){
         // Por enunciado si quantum < cantidad de jugadores, quantum = cantidad de jugadores
         quantum = rand() % 9*config.cantidad_jugadores + 1; 
         quantum<config.cantidad_jugadores ? quantum = config.cantidad_jugadores : quantum = quantum;
 	}
+    //quantum = config.cantidad_jugadores/2;
     // Creo equipos (lanza procesos)
     strat == USTEDES ? assert(config.cantidad_jugadores>1): assert(config.cantidad_jugadores>0);
 	Equipo rojo(&belcebu, ROJO, strat, config.cantidad_jugadores, quantum, config.pos_rojo);
