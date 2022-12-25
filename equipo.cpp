@@ -201,8 +201,8 @@ void Equipo::jugador(int nro_jugador) {
 				// ...
 				//
 				mt.lock();
-				pos_actual = this->posiciones[nro_jugador];
 				dir = apuntar_a(pos_actual, this->pos_bandera_contraria);
+				assert(this->posiciones[nro_jugador] == this->belcebu->pos_jugador(this->equipo, nro_jugador));				
 				if(nro_jugador==this->jugador_min_distancia) {
 					for(int i=0; i<this->quantum; i++) {
 						if(!this->belcebu->mov_habilitado(pos_actual, dir)){
@@ -211,6 +211,14 @@ void Equipo::jugador(int nro_jugador) {
 						this->belcebu->mover_jugador(dir, i);
 						this->posiciones[nro_jugador] = this->belcebu->pos_jugador(this->equipo, nro_jugador);
 						this->jugador_min_distancia = this->jugador_minima_distancia();
+					}
+					if(this->belcebu->termino_juego()){
+						for(int i=0; i<this->cant_jugadores; i++) {
+							sem_post(&this->barrier);
+						}
+						mt.unlock();
+						this->belcebu->termino_ronda(this->equipo);
+						return;
 					}
 					assert(this->posiciones[nro_jugador] == this->belcebu->pos_jugador(this->equipo, nro_jugador));				
 				}

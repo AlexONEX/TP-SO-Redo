@@ -2,24 +2,25 @@
 
 # Pass the strategy number as a parameter to the binary. 0 Secuencial, 1 RR, 2 SHORTEST, 3 USTEDES
 i=0
-while [ $i -lt 1000 ]
+while [ $i -lt 400 ]
     do
-        if [ $i -ge 0 ] && [ $i -le 249 ]
+        if [ $i -ge 0 ] && [ $i -le 99 ]
             then
                 ./test_tp_sistemas 0
                 echo "Secuencial"
         fi
-        if [ $i -ge 250 ] && [ $i -le 499 ]
+        if [ $i -ge 100 ] && [ $i -le 199 ]
             then
                 ./test_tp_sistemas 1
                 echo "Round Robin"
+                echo $i
         fi
-        if [ $i -ge 500 ] && [ $i -le 749 ]
+        if [ $i -ge 200 ] && [ $i -le 299 ]
             then
                 ./test_tp_sistemas 2
                 echo "Shortest"
         fi
-        if [ $i -ge 750 ] && [ $i -le 999 ]
+        if [ $i -ge 300 ] && [ $i -le 399 ]
             then
                 ./test_tp_sistemas 3
                 echo "Ustedes"
