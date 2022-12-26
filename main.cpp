@@ -6,11 +6,11 @@
 using namespace std;
 int quantum;
 
-estrategia strat = RR;
+estrategia strat;
 int main(int argc, char *argv[]){
     // Recibimos strat a partir de stdin
-    
     strat = (estrategia) atoi(argv[1]);
+    assert(strat == RR || strat == SECUENCIAL || strat == USTEDES || strat == SHORTEST);
     Config config = *(new Config());
     gameMaster belcebu = gameMaster(config);
     // Randomizamos el quantum
