@@ -144,7 +144,8 @@ void gameMaster::termino_ronda(color equipo) {
             sem_wait(&this->barrier);
         }
         this->turno = (equipo == ROJO) ? AZUL : ROJO;
-		for(int i=0; i<this->jugadores_por_equipos;i++){
+		// this->dibujame();
+        for(int i=0; i<this->jugadores_por_equipos;i++){
 			this->turno == ROJO ? sem_post(&this->turno_rojo) : sem_post(&this->turno_azul);
 		}
 	}
