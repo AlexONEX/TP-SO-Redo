@@ -37,6 +37,7 @@ Equipo::Equipo(gameMaster *belcebu, color equipo,
 	
 	//this->pos_bandera_contraria = this->belcebu->pos_bandera(this->contrario);
 	this->jugador_min_distancia  = this->jugador_minima_distancia();
+	this->jugador_max_distancia  = this->jugador_maxima_distancia();
 
 	this->vec_sem = vector<sem_t>(this->cant_jugadores);
 	for (int i = 0; i < this->cant_jugadores; i++) {
@@ -257,8 +258,11 @@ void Equipo::comenzar() {
     if(this->strat==RR){
         sem_post(&this->vec_sem[0]);
     }
-	else if(this->strat==SHORTEST || this->strat==USTEDES){
+	else if(this->strat==SHORTEST ){
 		this->jugador_min_distancia = this->jugador_minima_distancia();
+	}
+	else if(this->strat==USTEDES){
+		this->jugador_max_distancia = this->jugador_maxima_distancia();
 	}
 	for(int i=0; i < cant_jugadores; i++) {
 		jugadores.emplace_back(thread(&Equipo::jugador, this, i)); 
@@ -302,6 +306,21 @@ int Equipo::jugador_minima_distancia() {
             nro_jug = i;
         }
     }
+    return nro_jug;
+}
+
+int Equipo::jugador_maxima_distancia() {
+    int max_dist = -1;
+    int nro_jug = -1;
+    for (int i = 0; i < this->cant_jugadores; i++) {
+        coordenadas p = this->posiciones[i];
+        int dist = this->belcebu->distancia(p, this->pos_bandera_contraria);
+        if (max_dist < dist) {
+            max_dist = dist;
+            nro_jug = i;
+        }
+    }
+	assert(nro_jug != -1);
     return nro_jug;
 }
 

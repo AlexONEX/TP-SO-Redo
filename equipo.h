@@ -41,6 +41,7 @@ class Equipo {
 		void comenzar();
 		void terminar();
 		int jugador_minima_distancia();
+		int jugador_maxima_distancia();	
 		bool jugador_rodeado(int nro_jugador);
 		void buscar_bandera_contraria_secuencial();
 
