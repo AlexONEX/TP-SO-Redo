@@ -129,8 +129,8 @@ void gameMaster::termino_ronda(color equipo) {
     //this->dibujame();
     assert(equipo == this->turno);
     this->nro_ronda++;
-	if(this->termino_juego() || this->nro_ronda > 5000){
-        if(this->nro_ronda > 5000){
+	if(this->termino_juego() || this->nro_ronda > 500){
+        if(this->nro_ronda > 500){
             this->ganador = EMPATE;
         }
 		for(int i=0; i<this->jugadores_por_equipos; i++){
