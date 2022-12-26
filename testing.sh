@@ -15,7 +15,6 @@ while(true)
                 then
                     ./test_tp_sistemas 1
                     echo "Round Robin"
-                    echo $i
             fi
             if [ $i -ge 200 ] && [ $i -le 299 ]
                 then
@@ -27,6 +26,7 @@ while(true)
                     ./test_tp_sistemas 3
                     echo "Ustedes"
             fi
+            echo $i
             i=$((i+1))
         done
         echo "Fin de los tests"
