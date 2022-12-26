@@ -54,7 +54,6 @@ class Equipo {
 
 		bool vuelta_rr;
 		vector<sem_t> vec_sem;
-		vector<bool> vec_bool;
 		sem_t barrier;
 		sem_t barrier_ustedes;
 		mutex bandera_contraria_encontrada;

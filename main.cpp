@@ -8,7 +8,8 @@ int quantum;
 
 estrategia strat = RR;
 int main(int argc, char *argv[]){
-    //receive strat trough stdin
+    // Recibimos strat a partir de stdin
+    
     strat = (estrategia) atoi(argv[1]);
     Config config = *(new Config());
     gameMaster belcebu = gameMaster(config);
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]){
 	}
 
     // Creo equipos (lanza procesos)
-    strat == USTEDES ? assert(config.cantidad_jugadores>1): assert(config.cantidad_jugadores>0);
+    assert(config.cantidad_jugadores>0);
 	
     Equipo rojo(&belcebu, ROJO, strat, config.cantidad_jugadores, quantum, config.pos_rojo);
 	Equipo azul(&belcebu, AZUL, strat, config.cantidad_jugadores, quantum, config.pos_azul);

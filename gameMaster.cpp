@@ -117,7 +117,6 @@ int gameMaster::mover_jugador(direccion dir, int nro_jugador) {
     (turno == ROJO ? pos_jugadores_rojos : pos_jugadores_azules)[nro_jugador] = prox_pos;
 	coordenadas bandera_contraria = (turno == ROJO ? pos_bandera_azul : pos_bandera_roja);
     if(prox_pos == bandera_contraria){
-        //cout << "GANO " << this->turno << endl;
         this->ganador = this->turno;
     }
     return 	(this->termino_juego() ? 0 : nro_ronda);
